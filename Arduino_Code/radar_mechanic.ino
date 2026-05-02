@@ -27,8 +27,9 @@ void loop() { // this code is executed repeatedly in a loop (unlike a setup() fu
 
   long time = 0; // variable to store the time it takes for the signal to return
   double distance = 0; // variable to store the calculated distance (in cm)
+  double velocity = 0.0343; // speed of sound in cm/µs (343 m/s converted to cm/µs)
   time = pulseIn(echoPin, HIGH); // wait for the signal to return and measure the time it takes (in microseconds)
-  distance = time / 58.0; // calculate the distance based on the time (explanation in readme.md)
+  distance = velocity * time / 2; // calculate the distance based on the time (elaboration in readme.md, why we divide by 2)
   Serial.print(position); // print the current position of the servo
   Serial.print(","); // print a comma to separate the position and distance values
   Serial.println(distance); // print the calculated distance and move to the next line for the next measurement
