@@ -1,3 +1,14 @@
+### Arduino ###
+# IDE temporary files
+build/
+bin/
+# Compiled binaries
+*.hex
+*.elf
+*.o
+
+### Processing ###
+# Ignore the export folders
 .DS_Store
 applet
 application.linux-arm64
