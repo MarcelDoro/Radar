@@ -1,4 +1,4 @@
-import processing.serial.*;
+import processing.serial.*; // enable reading from serial monitor
 
 // Hardware Data Variables
 Serial myPort;
@@ -45,8 +45,8 @@ void drawRadarGrid() {
   strokeWeight(2);
   
   for (int i = 1; i <= 5; i++) {
-    // Draws the 5 half circles 
-    arc(0, 0, i * distanceBetweenArcs, i * distanceBetweenArcs, PI, TWO_PI);
+    // We draw 5 arches spaced distanceBetweenArches between each other and we draw only top half(we want arch not a full circle)
+    arc(0, 0, i * distanceBetweenArches, i * distanceBetweenArches, PI, TWO_PI);
   }
 }
 
