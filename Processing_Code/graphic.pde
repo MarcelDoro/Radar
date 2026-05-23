@@ -1,64 +1,109 @@
 import processing.serial.*;
 
+// Hardware Data Variables
 Serial myPort;
-float angle = 0;
+float angle = 0; 
 float distance = 0;
 
-void setup() { 
- fullScreen();
- myPort = new Serial(this, "COM7", 9600);
- myPort.bufferUntil('\n');
+// UI & Layout Customization
+int distanceBetweenArcs = 300;
+int BigArchRadius = 5 * distanceBetweenArcs / 2;
+
+// Text Position Offsets
+int angleTextXPos = -180;
+int angleTextYPos = 50;
+int distanceTextXPos = 20;
+int distanceTextYPos = 50;
+
+void setup() {
+  size(1536, 864);
+  
+  // Serial Configuration 
+  myPort = new Serial(this, "COM6", 9600);
+  myPort.bufferUntil('\n');
 }
 
 void draw() {
-  background(0); // background color 0 - black
+  // THE TRAIL EFFECT
+  noStroke();
+  fill(0, 15); // '15' is the alpha transparency(nieprzezroczystosc). 0 is completely invisible, 255 is completely solid.
+  rect(0, 0, width, height);
   
-  translate(width/2, height - 100); // move drawing center
+  // 2. Shift the drawing origin to the bottom-center
+  translate(width/2, height - 100); 
   
+  // 3. Render all individual components
+  drawRadarGrid();
+  drawSweepLine();
+  drawTextUI();
+}
+
+// Draws the background sonar radar arcs
+void drawRadarGrid() {
   noFill();
-  stroke(0, 100, 0); // colour dark green
-  strokeWeight(2); // line thickness
+  stroke(0, 100, 0); // Dark Green
+  strokeWeight(2);
+  
   for (int i = 1; i <= 5; i++) {
-    // Rysujemy łuk od PI do TWO_PI (górna połowa)
-    arc(0, 0, i * 380, i * 380, PI, TWO_PI);
-  }
-  
-  fill(0, 255, 0); // green text color
-  textSize(32);
-  text("Angle: " + angle, -180, 50);
-  text("Distance: " + distance, 20, 50);
-  
-  float r = 10 * distance;
-  float x = -r * cos(radians(angle));
-  float y = -r * sin(radians(angle));
-  
-  float a = y / x;
-  
-  float x2 = 950.0 / sqrt(a * a + 1);
-  if (x < 0) x2 = -x2;
-  float y2 = a * x2;
-  
-  stroke(0, 255, 0); // green colour
-  
-  if (x * x + y * y >= 950 * 950) { // point is outside of a circle
-    line(0, 0, x2, y2); // draw green line  
-  } else {
-    line(0, 0, x, y); // draw green line
-    fill(255, 0, 0); // red colour
-    stroke(255, 0 ,0);
-    line(x, y, x2, y2);
+    // Draws the 5 half circles 
+    arc(0, 0, i * distanceBetweenArcs, i * distanceBetweenArcs, PI, TWO_PI);
   }
 }
 
+// Calculates and draws the radar line
+void drawSweepLine() {
+  // Target coordinates based on sensor distance
+  float targetRadius = 10 * distance; 
+  float targetX = -targetRadius * cos(radians(angle));
+  float targetY = -targetRadius * sin(radians(angle));
+  
+  // Maximal coordinates of the radar grid scope
+  float edgeX = -BigArchRadius * cos(radians(angle));
+  float edgeY = -BigArchRadius * sin(radians(angle));
+  
+  // Check if target falls within our maximum radar boundary range
+  if (targetRadius >= BigArchRadius) {
+    // Draw safe green line out to the edge
+    stroke(0, 255, 0);
+    line(0, 0, edgeX, edgeY);  
+  } else {
+    // Green up to object, Red showing the blocked zone behind it
+    stroke(0, 255, 0); // Green
+    line(0, 0, targetX, targetY);
+    
+    stroke(255, 0, 0); // Red
+    line(targetX, targetY, edgeX, edgeY);
+  }
+}
+
+// Renders the data text readouts
+void drawTextUI() {
+  // Pick up pure, 100% solid black paint (no transparency)
+  noStroke();
+  fill(0);
+  
+  // Draw solid black rectangles over the text areas to erase the old numbers(they do not overlay with previous)
+  rect(angleTextXPos - 10, angleTextYPos - 32, 220, 45); 
+  rect(distanceTextXPos - 10, distanceTextYPos - 32, 320, 45);
+  
+  fill(0, 255, 0); // Bright Green
+  textSize(32);
+  
+  text("Angle: " + angle + "°", angleTextXPos, angleTextYPos);
+  text("Distance: " + distance + " cm", distanceTextXPos, distanceTextYPos);
+}
+
+// Listens to incoming hardware input from Arduino
 void serialEvent(Serial myPort) {
   String input = myPort.readStringUntil('\n');
   
-  if (input != null) input = trim(input); // delete useless symbols
-  
-  String[] list = split(input, ',');
-  
-  if (list.length >= 2) {
-    angle = float(list[0]);
-    distance = float(list[1]);
+  if (input != null) {
+    input = trim(input); // Clear out hidden white spaces
+    String[] dataList = split(input, ',');
+    
+    if (dataList.length >= 2) {
+      angle = float(dataList[0]);
+      distance = float(dataList[1]);
+    }
   }
 }
