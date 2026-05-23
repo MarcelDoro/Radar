@@ -46,7 +46,7 @@ void drawRadarGrid() {
   
   for (int i = 1; i <= 5; i++) {
     // We draw 5 arches spaced distanceBetweenArches between each other and we draw only top half(we want arch not a full circle)
-    arc(0, 0, i * distanceBetweenArches, i * distanceBetweenArches, PI, TWO_PI);
+    arc(0, 0, i * distanceBetweenArcs, i * distanceBetweenArcs, PI, TWO_PI);
   }
 }
 
