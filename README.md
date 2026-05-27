@@ -12,6 +12,9 @@ To replicate this project, you will need the following hardware:
 - HC-SR04 Ultrasonic Sensor
 - SG90 Micro Servo Motor
 - Breadboard
+- 9V Battery
+- 2 Ceramic Capacitors 100$nF$
+- LM7805 Linear Stabilizer (5V)
 - Jumper Wires
 
 ## 🪚 Connection example
