@@ -60,4 +60,4 @@ Our final distance is equal
 $$\frac{s}{2}=\frac{v*t}{2}=\frac{10,29\text{ cm}}{2}=\boxed{5,145\text{ cm}}$$
 
 ## 🤖 AI usage declaration
-AI was used for adding trail effect in the Processing visualization. All AI-generated code was reviewed, tested, and integrated
+AI was used for adding trail effect in the Processing visualization and improving README readability. All AI-generated code was reviewed, tested, and integrated
